@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papers 03 — Reasoning &amp; Test-Time Compute</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-card: #0d1117;
+            --bg-code: #161b22;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent: #76B900;
+            --accent-dim: #76B90044;
+            --accent-glow: #76B90033;
+            --border: #21262d;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            --font-body: 'Inter', sans-serif;
+            --max-width: 900px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 17px;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .hero > * { position: relative; z-index: 1; }
+        .series-label {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+        .hero h1 .accent { color: var(--accent); }
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin-bottom: 2rem;
+        }
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+        .tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+            white-space: nowrap;
+        }
+        .pipeline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            max-width: var(--max-width);
+        }
+        .pipeline-step {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            padding: 0.3rem 0.7rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .pipeline-arrow { color: var(--accent); font-size: 0.9rem; font-weight: 700; }
+        .slide {
+            min-height: 100vh;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .slide-number {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            font-weight: 700;
+            color: var(--accent-dim);
+            position: absolute;
+            top: 2rem;
+            right: 1.5rem;
+            line-height: 1;
+            user-select: none;
+        }
+        .slide h2 {
+            font-family: var(--font-display);
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            line-height: 1.25;
+        }
+        .slide h3 {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .slide p { margin-bottom: 1rem; color: var(--text-secondary); }
+        .slide p strong { color: var(--text-primary); }
+        .slide ul, .slide ol { margin-bottom: 1rem; padding-left: 1.5rem; color: var(--text-secondary); }
+        .slide li { margin-bottom: 0.4rem; }
+        .slide li strong { color: var(--text-primary); }
+        .slide code {
+            font-family: var(--font-mono);
+            font-size: 0.88em;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            padding: 0.05rem 0.35rem;
+            border-radius: 3px;
+            color: #c9d1d9;
+        }
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 1.25rem 0;
+            overflow: hidden;
+        }
+        .code-header {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            background: rgba(118, 185, 0, 0.08);
+            padding: 0.4rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .code-block pre { margin: 0; padding: 1rem; overflow-x: auto; }
+        .code-block code {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: #c9d1d9;
+            background: transparent;
+            border: none;
+            padding: 0;
+        }
+        .kw { color: #ff7b72; }
+        .fn { color: #d2a8ff; }
+        .str { color: #a5d6ff; }
+        .cm { color: #8b949e; font-style: italic; }
+        .num { color: #79c0ff; }
+        .type { color: #ffa657; }
+        .dir { color: #ff7b72; }
+        .mac { color: #ffa657; }
+        .table-wrap {
+            overflow-x: auto;
+            margin: 1.25rem 0;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th {
+            background: var(--bg-code);
+            color: var(--accent);
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:nth-child(even) td { background: rgba(13, 17, 23, 0.5); }
+        .diagram-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .diagram-box {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            text-align: center;
+            white-space: nowrap;
+        }
+        .diagram-box.accent { border-color: var(--accent); color: var(--accent); background: rgba(118, 185, 0, 0.08); }
+        .diagram-box.dim { color: var(--text-secondary); border-color: var(--border); }
+        .diagram-arrow { color: var(--accent); font-size: 1.3rem; font-weight: 700; }
+        .diagram-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .diagram-vertical .diagram-arrow { font-size: 1.1rem; }
+        .hierarchy {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .hierarchy-level { display: flex; align-items: center; gap: 0.75rem; }
+        .hierarchy-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 80px;
+            text-align: right;
+        }
+        .hierarchy-items { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+        .hierarchy-item {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .hierarchy-item.accent { border-color: var(--accent); color: var(--accent); background: rgba(118, 185, 0, 0.08); }
+        .diagram-grid {
+            display: grid;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .diagram-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+        .diagram-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .diagram-panel {
+            padding: 1rem;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .diagram-panel.accent-border { border-left: 3px solid var(--accent); }
+        .diagram-panel h4 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+        .diagram-panel p, .diagram-panel ul { font-size: 0.85rem; }
+        .callout {
+            background: var(--bg-card);
+            border-left: 3px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin: 1.25rem 0;
+        }
+        .callout p { margin-bottom: 0; }
+        .callout p + p { margin-top: 0.5rem; }
+        .callout .callout-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+        }
+        .contents-list { list-style: none; padding-left: 0; counter-reset: contents; }
+        .contents-list li {
+            counter-increment: contents;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .contents-list li:last-child { border-bottom: none; }
+        .contents-list li::before {
+            content: counter(contents, decimal-leading-zero);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent);
+            min-width: 2rem;
+        }
+        .contents-list a { color: var(--text-primary); text-decoration: none; transition: color 0.2s; }
+        .contents-list a:hover { color: var(--accent); }
+        .footer {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+        .footer a { color: var(--accent); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .canvas-wrap {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.25rem 0;
+            overflow-x: auto;
+        }
+        .canvas-wrap canvas, .canvas-wrap svg { display: block; margin: 0 auto; max-width: 100%; }
+        .badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            vertical-align: middle;
+            margin-left: 0.3rem;
+        }
+        .badge.ok    { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+        .badge.warn  { border-color: #ffa657; color: #ffa657; background: rgba(255,166,87,0.08); }
+        .badge.bad   { border-color: #ff7b72; color: #ff7b72; background: rgba(255,123,114,0.08); }
+        @media (max-width: 640px) {
+            .slide { padding: 3rem 1rem; min-height: auto; }
+            .slide-number { font-size: 3rem; top: 1.5rem; right: 1rem; }
+            .slide h2 { font-size: 1.5rem; }
+            .diagram-grid.cols-2, .diagram-grid.cols-3 { grid-template-columns: 1fr; }
+            .pipeline { gap: 0.15rem; }
+            .pipeline-step { font-size: 0.6rem; padding: 0.2rem 0.4rem; }
+            .hero h1 { font-size: 1.8rem; }
+            table { font-size: 0.78rem; }
+        }
+    </style>
+</head>
+<body>
+<header class="hero">
+    <div class="series-label">Key LLM Publications Series &mdash; Presentation 03</div>
+    <h1>Reasoning &amp; <span class="accent">Test-Time Compute</span></h1>
+    <p class="subtitle">The five papers that taught models to <em>think before answering</em> &mdash; from chain-of-thought prompting and majority voting, through deliberate tree search and step-level verification, to large-scale RL that grows reasoning from scratch.</p>
+    <div class="tags">
+        <span class="tag">Chain-of-Thought</span>
+        <span class="tag">Self-Consistency</span>
+        <span class="tag">Tree of Thoughts</span>
+        <span class="tag">Process Rewards</span>
+        <span class="tag">RL Reasoning</span>
+        <span class="tag">o1 / R1</span>
+    </div>
+    <div class="pipeline">
+        <span class="pipeline-step">Prompt</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Step-by-step CoT</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Sample &amp; Vote</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Search</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">Verify Steps</span>
+        <span class="pipeline-arrow">&rarr;</span>
+        <span class="pipeline-step">RL-trained reasoning</span>
+    </div>
+</header>
+
+<section class="slide" id="slide-00">
+    <div class="slide-number">00</div>
+    <h2>The Five Papers</h2>
+    <p>This deck traces the intellectual arc of LLM reasoning: each paper assumes the previous one and pushes the frontier of <strong>how much useful computation you can spend at test time</strong>. Read them in order and the rationale for o1-style and R1-style reasoning models becomes inevitable.</p>
+    <ul class="contents-list">
+        <li><a href="#slide-01">Chain-of-Thought Prompting &mdash; Wei et al., 2022</a></li>
+        <li><a href="#slide-02">Self-Consistency &mdash; Wang et al., 2022</a></li>
+        <li><a href="#slide-03">Tree of Thoughts &mdash; Yao et al., 2023</a></li>
+        <li><a href="#slide-04">Let's Verify Step by Step &mdash; Lightman et al., 2023</a></li>
+        <li><a href="#slide-05">DeepSeek-R1 &mdash; DeepSeek-AI, 2025</a></li>
+    </ul>
+</section>
+
+<section class="slide" id="slide-01">
+    <div class="slide-number">01</div>
+    <h2>Chain-of-Thought Prompting Elicits Reasoning in Large Language Models</h2>
+    <p><strong>Wei, Wang, Schuurmans, Bosma, Ichter, Xia, Chi, Le, Zhou (Google)</strong> &mdash; <span class="badge ok">2022</span> &mdash; <code>arXiv:2201.11903</code></p>
+
+    <h3>The problem</h3>
+    <p>Large models were strong at single-step pattern completion but failed badly at problems requiring several intermediate deductions &mdash; multi-step arithmetic word problems, commonsense chains, symbolic manipulation. Standard few-shot prompting gave a question and jumped straight to an answer, leaving the model no room to "show its working", and scaling parameters alone barely moved these benchmarks.</p>
+
+    <h3>The contribution</h3>
+    <p>Chain-of-thought (CoT) prompting: include a handful of few-shot exemplars whose answers are written out as <strong>intermediate reasoning steps</strong> before the final result. With nothing more than this prompt format change &mdash; no fine-tuning, no extra data &mdash; models decompose problems into steps. Critically, the gain is an <strong>emergent ability</strong>: it appears only above roughly 100B parameters and is flat or harmful for small models. PaLM 540B with CoT set a new state of the art on GSM8K.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Standard prompt</h4>
+            <p><strong>Q:</strong> Roger has 5 balls. He buys 2 cans of 3 balls each. How many now?</p>
+            <p><strong>A:</strong> 11 &nbsp;<span class="badge bad">often wrong</span></p>
+            <p>The model must compute the whole answer in one forward pass &mdash; no place to hold partial results.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Chain-of-thought prompt</h4>
+            <p><strong>Q:</strong> Roger has 5 balls. He buys 2 cans of 3 balls each. How many now?</p>
+            <p><strong>A:</strong> Roger started with 5. Two cans of 3 balls is 6 balls. 5 + 6 = 11. The answer is 11. <span class="badge ok">correct</span></p>
+            <p>Intermediate steps give the model serial computation budget.</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why it matters to a practising engineer</div>
+        <p>CoT is the cheapest reasoning intervention you have: a prompt-template change, zero training cost. Add <code>Let's think step by step</code> (zero-shot CoT) or a few worked exemplars before reaching for fine-tuning. But remember the scale dependency &mdash; on a 7B model CoT may not help and can hurt &mdash; and that a verbose chain costs output tokens and latency. CoT is the substrate every later technique in this deck builds on.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-02">
+    <div class="slide-number">02</div>
+    <h2>Self-Consistency Improves Chain of Thought Reasoning in Language Models</h2>
+    <p><strong>Wang, Wei, Schuurmans, Le, Chi, Narang, Chowdhery, Zhou (Google)</strong> &mdash; <span class="badge ok">2022</span> &mdash; <code>arXiv:2203.11171</code></p>
+
+    <h3>The problem</h3>
+    <p>Greedy CoT decodes a single reasoning path. If the model takes one wrong turn early, the whole chain &mdash; and the answer &mdash; is lost, even when the model "knows" the right answer along other paths. A single sample wastes the model's latent diversity.</p>
+
+    <h3>The contribution</h3>
+    <p>Self-consistency replaces greedy decoding with <strong>sample-and-marginalise</strong>: draw many diverse reasoning paths at non-zero temperature, then take a <strong>majority vote over the final answers</strong>, discarding the reasoning text itself. The intuition is that correct answers are reachable by many distinct valid chains, while errors are idiosyncratic and scatter. It is a pure decoding strategy &mdash; no training, no verifier &mdash; and delivers large gains over greedy CoT (e.g. +17.9 points on GSM8K with the same model).</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 700 230" width="700" height="230" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .sc-lbl { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .sc-ttl { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+                .sc-box { fill: #161b22; stroke: #21262d; stroke-width: 1; }
+                .sc-boxa { fill: rgba(118,185,0,0.08); stroke: #76B900; stroke-width: 1; }
+                .sc-edge { stroke: #76B90066; stroke-width: 1; fill: none; }
+                .sc-ans { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+            </style>
+            <text x="10" y="18" class="sc-ttl">Sample N chains at T&gt;0 &rarr; majority vote</text>
+            <rect x="10" y="95" width="110" height="38" rx="6" class="sc-boxa"/>
+            <text x="22" y="118" class="sc-ans">Prompt + CoT</text>
+            <!-- fan out -->
+            <path d="M120 114 C 170 60, 200 55, 250 55" class="sc-edge"/>
+            <path d="M120 114 C 170 95, 200 100, 250 100" class="sc-edge"/>
+            <path d="M120 114 C 170 130, 200 130, 250 130" class="sc-edge"/>
+            <path d="M120 114 C 170 175, 200 180, 250 180" class="sc-edge"/>
+            <rect x="250" y="38" width="180" height="32" rx="5" class="sc-box"/>
+            <text x="262" y="58" class="sc-ans">path 1 &rarr; <tspan fill="#76B900">11</tspan></text>
+            <rect x="250" y="84" width="180" height="32" rx="5" class="sc-box"/>
+            <text x="262" y="104" class="sc-ans">path 2 &rarr; <tspan fill="#76B900">11</tspan></text>
+            <rect x="250" y="130" width="180" height="32" rx="5" class="sc-box"/>
+            <text x="262" y="150" class="sc-ans">path 3 &rarr; <tspan fill="#ff7b72">9</tspan></text>
+            <rect x="250" y="176" width="180" height="32" rx="5" class="sc-box"/>
+            <text x="262" y="196" class="sc-ans">path N &rarr; <tspan fill="#76B900">11</tspan></text>
+            <!-- vote -->
+            <path d="M430 54 C 500 70, 510 95, 555 110" class="sc-edge"/>
+            <path d="M430 100 C 500 100, 510 105, 555 112" class="sc-edge"/>
+            <path d="M430 146 C 500 130, 510 120, 555 116" class="sc-edge"/>
+            <path d="M430 192 C 500 160, 510 130, 555 120" class="sc-edge"/>
+            <rect x="555" y="92" width="130" height="44" rx="6" class="sc-boxa"/>
+            <text x="567" y="112" class="sc-ans">vote &rarr;</text>
+            <text x="567" y="128" class="sc-ans"><tspan fill="#76B900" font-size="14">answer = 11</tspan></text>
+        </svg>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why it matters to a practising engineer</div>
+        <p>This is your first explicit <strong>test-time compute</strong> knob: spend more samples to buy accuracy. Gains are large at first and saturate, so tune N (often 5&ndash;40) against your latency and cost budget. It needs answers that can be normalised and compared for voting &mdash; perfect for math/multiple-choice, awkward for free-form text. Self-consistency is the conceptual seed of "sample many, then select", which Tree of Thoughts and PRM-based search generalise.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-03">
+    <div class="slide-number">03</div>
+    <h2>Tree of Thoughts: Deliberate Problem Solving with Large Language Models</h2>
+    <p><strong>Yao, Yu, Zhao, Shafran, Griffiths, Cao, Narasimhan (Princeton &amp; Google DeepMind)</strong> &mdash; <span class="badge ok">2023</span> &mdash; <code>arXiv:2305.10601</code></p>
+
+    <h3>The problem</h3>
+    <p>CoT and self-consistency commit to left-to-right token generation: they cannot explore alternatives, look ahead, or backtrack from a dead end. For problems needing planning or search &mdash; Game of 24, creative writing, mini crosswords &mdash; a single (or even many parallel) linear chains fail because the model can never revise an early choice.</p>
+
+    <h3>The contribution</h3>
+    <p>Tree of Thoughts (ToT) generalises CoT into a deliberate search over a tree of partial solutions. It factors reasoning into four components: (1) <strong>thought decomposition</strong> into coherent intermediate steps; (2) a <strong>generator</strong> that proposes several next thoughts per state; (3) a <strong>state evaluator</strong> where the LLM scores or votes on how promising each partial solution is; and (4) a <strong>search algorithm</strong> &mdash; BFS or DFS &mdash; with lookahead and backtracking. On Game of 24, GPT-4 with CoT solved 4% of tasks; with ToT it solved 74%.</p>
+
+    <div class="canvas-wrap">
+        <svg viewBox="0 0 700 250" width="700" height="250" xmlns="http://www.w3.org/2000/svg">
+            <style>
+                .tt-ttl { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+                .tt-lbl { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .tt-node { fill: #161b22; stroke: #21262d; stroke-width: 1.5; }
+                .tt-good { fill: rgba(118,185,0,0.12); stroke: #76B900; stroke-width: 1.5; }
+                .tt-dead { fill: #161b22; stroke: #ff7b72; stroke-width: 1.5; stroke-dasharray: 3 3; }
+                .tt-edge { stroke: #21262d; stroke-width: 1.5; }
+                .tt-edgeg { stroke: #76B900; stroke-width: 2; }
+            </style>
+            <text x="10" y="18" class="tt-ttl">Search tree of thoughts: generate &rarr; evaluate &rarr; expand best / prune</text>
+            <!-- edges -->
+            <line x1="350" y1="55" x2="180" y2="120" class="tt-edge"/>
+            <line x1="350" y1="55" x2="350" y2="120" class="tt-edgeg"/>
+            <line x1="350" y1="55" x2="520" y2="120" class="tt-edge"/>
+            <line x1="350" y1="135" x2="270" y2="195" class="tt-edge"/>
+            <line x1="350" y1="135" x2="430" y2="195" class="tt-edgeg"/>
+            <!-- root -->
+            <circle cx="350" cy="45" r="22" class="tt-good"/>
+            <text x="338" y="49" class="tt-lbl">root</text>
+            <!-- level 1 -->
+            <circle cx="180" cy="130" r="22" class="tt-dead"/>
+            <text x="168" y="134" class="tt-lbl">prune</text>
+            <circle cx="350" cy="130" r="22" class="tt-good"/>
+            <text x="340" y="134" class="tt-lbl">eval&#x2713;</text>
+            <circle cx="520" cy="130" r="22" class="tt-node"/>
+            <text x="510" y="134" class="tt-lbl">keep</text>
+            <!-- level 2 -->
+            <circle cx="270" cy="205" r="22" class="tt-dead"/>
+            <text x="258" y="209" class="tt-lbl">prune</text>
+            <circle cx="430" cy="205" r="22" class="tt-good"/>
+            <text x="416" y="209" class="tt-lbl">solved</text>
+            <text x="560" y="208" class="tt-lbl">DFS/BFS + backtrack</text>
+        </svg>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why it matters to a practising engineer</div>
+        <p>ToT is the blueprint for agentic, search-based inference: it turns the LLM into both a <em>proposer</em> and a <em>critic</em> inside an explicit search loop you control. The cost is real &mdash; many LLM calls per node for generation and evaluation &mdash; so reserve it for hard, verifiable planning tasks where linear sampling plateaus. The generate/evaluate/search decomposition maps directly onto MCTS-style agents and the verifier-guided search of the next paper.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-04">
+    <div class="slide-number">04</div>
+    <h2>Let's Verify Step by Step</h2>
+    <p><strong>Lightman, Kosaraju, Burda, Edwards, Baker, Lee, Leike, Schulman, Sutskever, Cobbe (OpenAI)</strong> &mdash; <span class="badge ok">2023</span> &mdash; <code>arXiv:2305.20050</code></p>
+
+    <h3>The problem</h3>
+    <p>To pick the best of many sampled solutions you need a verifier (reward model). The default is <strong>outcome supervision</strong>: label a full solution only by whether its final answer is correct. But a chain can reach the right answer through flawed steps, so outcome labels are a noisy, sparse signal &mdash; they reward "right for the wrong reasons" and give no guidance about <em>where</em> reasoning went wrong.</p>
+
+    <h3>The contribution</h3>
+    <p>The paper shows <strong>process supervision</strong> &mdash; providing feedback on <em>every reasoning step</em> &mdash; trains markedly more reliable verifiers than outcome supervision. Their process reward model (PRM) solves 78% of a representative MATH test subset by ranking many candidate solutions, beating an outcome-supervised reward model (ORM) and majority voting. They release <strong>PRM800K</strong>, ~800k step-level human correctness labels, and use the PRM to score/search over solutions.</p>
+
+    <div class="diagram-grid cols-2">
+        <div class="diagram-panel accent-border">
+            <h4>Outcome RM (ORM)</h4>
+            <p>One label for the whole solution: final answer right or wrong.</p>
+            <p><code>step 1 ... step 2 ... step k</code> &rarr; <span class="badge ok">final &#x2713;</span></p>
+            <p>Sparse &amp; noisy: rewards lucky-but-flawed chains; no signal on which step failed.</p>
+        </div>
+        <div class="diagram-panel accent-border">
+            <h4>Process RM (PRM)</h4>
+            <p>A correctness label at <strong>each step</strong>.</p>
+            <p><code>step 1</code> <span class="badge ok">&#x2713;</span> <code>step 2</code> <span class="badge ok">&#x2713;</span> <code>step 3</code> <span class="badge bad">&#x2717;</span></p>
+            <p>Dense &amp; aligned: pinpoints the first error, so it ranks and searches far more reliably.</p>
+        </div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why it matters to a practising engineer</div>
+        <p>This is how you make test-time search <em>smart</em> instead of just <em>big</em>: a PRM lets you score partial reasoning and guide best-of-N or tree search toward chains that are sound at every step, not merely lucky at the end. PRM800K is a reusable dataset for training your own step-level verifiers, and the dense reward is exactly the signal that makes verifier-guided search and RL on reasoning tractable &mdash; the bridge to R1.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-05">
+    <div class="slide-number">05</div>
+    <h2>DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</h2>
+    <p><strong>DeepSeek-AI</strong> &mdash; <span class="badge ok">2025</span> &mdash; <code>arXiv:2501.12948</code></p>
+
+    <h3>The problem</h3>
+    <p>The previous papers add reasoning at <em>inference</em> time via prompting and search. The open question: can you <strong>train</strong> a model so that long, deliberate reasoning emerges as a native behaviour &mdash; matching o1-class reasoning &mdash; without an enormous human-annotated supervised reasoning corpus?</p>
+
+    <h3>The contribution</h3>
+    <p><strong>R1-Zero</strong>: apply large-scale reinforcement learning (GRPO &mdash; Group Relative Policy Optimization) with simple rule-based rewards directly to a base model, <em>with no supervised fine-tuning at all</em>. The model spontaneously learns to generate long chains of thought, self-verify, reconsider, and produce "aha" moments &mdash; reasoning grown purely from RL incentives. <strong>R1</strong> then fixes R1-Zero's readability and language-mixing issues with a multi-stage pipeline: a small cold-start SFT set, reasoning-oriented RL, rejection-sampled SFT, then a final RL stage. The result reaches o1-level reasoning and ships as <strong>open weights</strong>, with distillations into smaller dense models.</p>
+
+    <div class="diagram-flow">
+        <div class="diagram-box dim">Base model</div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box accent">Cold-start SFT<br><small>small curated CoT</small></div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box accent">Reasoning RL<br><small>GRPO + rule rewards</small></div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box accent">Rejection-sample SFT<br><small>best RL outputs</small></div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box accent">Final RL<br><small>helpful + harmless</small></div>
+        <div class="diagram-arrow">&rarr;</div>
+        <div class="diagram-box">DeepSeek-R1</div>
+    </div>
+
+    <div class="diagram-vertical">
+        <div class="diagram-box accent">Sample a group of G outputs per prompt</div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box">Score each with rule-based reward (answer + format)</div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box">Advantage = reward normalised within the group (no critic)</div>
+        <div class="diagram-arrow">&darr;</div>
+        <div class="diagram-box accent">Policy update &rarr; longer, self-checking chains emerge</div>
+    </div>
+
+    <div class="callout">
+        <div class="callout-label">Why it matters to a practising engineer</div>
+        <p>R1 is the inflection point: reasoning is now a <em>trainable</em> capability with open weights you can self-host and distil, not just a prompt trick or a proprietary API. GRPO drops the value network, making RL cheaper to run, and rule-based rewards sidestep a learned reward model where answers are checkable. Practically: prefer R1-style models for hard math/code/logic; budget for their long thinking traces (latency and token cost); and note the distilled 1.5B&ndash;70B variants bring much of the gain to commodity hardware.</p>
+    </div>
+</section>
+
+<section class="slide" id="slide-06">
+    <div class="slide-number">06</div>
+    <h2>What to Take Away</h2>
+    <ul>
+        <li><strong>Reasoning is bought with test-time compute.</strong> The whole arc is about spending more computation per query &mdash; longer chains, more samples, search, verification &mdash; and getting accuracy back.</li>
+        <li><strong>Start with the cheapest lever.</strong> Chain-of-thought is a free prompt change, but it is an emergent ability &mdash; expect it only at sufficient scale.</li>
+        <li><strong>Sample, then select.</strong> Self-consistency (majority vote) is the simplest test-time scaling knob; tune the number of samples against latency and cost.</li>
+        <li><strong>Search beats linear chains on planning problems.</strong> Tree of Thoughts turns the LLM into proposer + evaluator inside an explicit BFS/DFS search with backtracking.</li>
+        <li><strong>Verify the steps, not just the answer.</strong> Process reward models (Let's Verify Step by Step, PRM800K) give a dense signal that makes guided search and RL tractable.</li>
+        <li><strong>Reasoning is now trainable and open.</strong> DeepSeek-R1 shows large-scale RL (GRPO) grows o1-class reasoning from a base model, with open weights and distillations.</li>
+    </ul>
+    <div class="callout">
+        <div class="callout-label">Where to next</div>
+        <p>Reasoning models think in long traces, which makes them expensive to serve. <strong>Presentation 04 &mdash; Efficient Inference &amp; Serving</strong> covers how to make all of this affordable: KV-cache management and PagedAttention, continuous batching, speculative decoding, quantisation, and throughput-vs-latency trade-offs in production serving stacks.</p>
+    </div>
+</section>
+
+<footer class="footer">
+    <p>Part of the <a href="https://github.com/BrendanJamesLynskey/LLM_Hub_Key_Publications">Key LLM Publications Series</a></p>
+    <p style="margin-top:0.5rem;font-size:0.8rem;"><a href="https://github.com/BrendanJamesLynskey/LLM_Hub_Key_Publications">Back to Series Index</a></p>
+</footer>
+<script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.slide').forEach(slide => {
+        slide.style.opacity = '0';
+        slide.style.transform = 'translateY(30px)';
+        slide.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(slide);
+    });
+</script>
+</body>
+</html>
