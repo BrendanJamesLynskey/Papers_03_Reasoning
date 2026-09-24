@@ -9,15 +9,15 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0a0a0a;
-            --bg-card: #0d1117;
-            --bg-code: #161b22;
-            --text-primary: #e6edf3;
-            --text-secondary: #8b949e;
-            --accent: #76B900;
-            --accent-dim: #76B90044;
-            --accent-glow: #76B90033;
-            --border: #21262d;
+            --bg-primary: #f2f1ee;
+            --bg-card: #eae8e4;
+            --bg-code: #e1dfd9;
+            --text-primary: #171717;
+            --text-secondary: #615f59;
+            --accent: #36774d;
+            --accent-dim: #36774d44;
+            --accent-glow: #36774d1a;
+            --border: #d1cfc7;
             --font-display: 'Space Grotesk', sans-serif;
             --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
             --font-body: 'Inter', sans-serif;
@@ -165,7 +165,7 @@
             border: 1px solid var(--border);
             padding: 0.05rem 0.35rem;
             border-radius: 3px;
-            color: #c9d1d9;
+            color: #2d2d2a;
         }
         .code-block {
             background: var(--bg-code);
@@ -178,7 +178,7 @@
             font-family: var(--font-mono);
             font-size: 0.75rem;
             color: var(--accent);
-            background: rgba(118, 185, 0, 0.08);
+            background: rgba(54,119,77,0.08);
             padding: 0.4rem 1rem;
             border-bottom: 1px solid var(--border);
         }
@@ -187,19 +187,19 @@
             font-family: var(--font-mono);
             font-size: 0.85rem;
             line-height: 1.6;
-            color: #c9d1d9;
+            color: #2d2d2a;
             background: transparent;
             border: none;
             padding: 0;
         }
-        .kw { color: #ff7b72; }
-        .fn { color: #d2a8ff; }
-        .str { color: #a5d6ff; }
-        .cm { color: #8b949e; font-style: italic; }
-        .num { color: #79c0ff; }
-        .type { color: #ffa657; }
-        .dir { color: #ff7b72; }
-        .mac { color: #ffa657; }
+        .kw { color: #9d1128; }
+        .fn { color: #422750; }
+        .str { color: #172539; }
+        .cm { color: #615f59; font-style: italic; }
+        .num { color: #173055; }
+        .type { color: #95621f; }
+        .dir { color: #9d1128; }
+        .mac { color: #95621f; }
         .table-wrap {
             overflow-x: auto;
             margin: 1.25rem 0;
@@ -223,7 +223,7 @@
             color: var(--text-secondary);
         }
         tr:last-child td { border-bottom: none; }
-        tr:nth-child(even) td { background: rgba(13, 17, 23, 0.5); }
+        tr:nth-child(even) td { background: rgba(234,232,228,0.5); }
         .diagram-flow {
             display: flex;
             flex-wrap: wrap;
@@ -247,7 +247,7 @@
             text-align: center;
             white-space: nowrap;
         }
-        .diagram-box.accent { border-color: var(--accent); color: var(--accent); background: rgba(118, 185, 0, 0.08); }
+        .diagram-box.accent { border-color: var(--accent); color: var(--accent); background: rgba(54,119,77,0.08); }
         .diagram-box.dim { color: var(--text-secondary); border-color: var(--border); }
         .diagram-arrow { color: var(--accent); font-size: 1.3rem; font-weight: 700; }
         .diagram-vertical {
@@ -290,7 +290,7 @@
             border: 1px solid var(--border);
             color: var(--text-secondary);
         }
-        .hierarchy-item.accent { border-color: var(--accent); color: var(--accent); background: rgba(118, 185, 0, 0.08); }
+        .hierarchy-item.accent { border-color: var(--accent); color: var(--accent); background: rgba(54,119,77,0.08); }
         .diagram-grid {
             display: grid;
             gap: 0.75rem;
@@ -384,8 +384,8 @@
             margin-left: 0.3rem;
         }
         .badge.ok    { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-        .badge.warn  { border-color: #ffa657; color: #ffa657; background: rgba(255,166,87,0.08); }
-        .badge.bad   { border-color: #ff7b72; color: #ff7b72; background: rgba(255,123,114,0.08); }
+        .badge.warn  { border-color: #95621f; color: #95621f; background: rgba(149,98,31,0.08); }
+        .badge.bad   { border-color: #9d1128; color: #9d1128; background: rgba(157,17,40,0.08); }
         @media (max-width: 640px) {
             .slide { padding: 3rem 1rem; min-height: auto; }
             .slide-number { font-size: 3rem; top: 1.5rem; right: 1rem; }
@@ -485,12 +485,12 @@
     <div class="canvas-wrap">
         <svg viewBox="0 0 700 230" width="700" height="230" xmlns="http://www.w3.org/2000/svg">
             <style>
-                .sc-lbl { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-                .sc-ttl { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
-                .sc-box { fill: #161b22; stroke: #21262d; stroke-width: 1; }
-                .sc-boxa { fill: rgba(118,185,0,0.08); stroke: #76B900; stroke-width: 1; }
-                .sc-edge { stroke: #76B90066; stroke-width: 1; fill: none; }
-                .sc-ans { fill: #e6edf3; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .sc-lbl { fill: #615f59; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+                .sc-ttl { fill: #36774d; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+                .sc-box { fill: #e1dfd9; stroke: #d1cfc7; stroke-width: 1; }
+                .sc-boxa { fill: rgba(54,119,77,0.08); stroke: #36774d; stroke-width: 1; }
+                .sc-edge { stroke: #36774d66; stroke-width: 1; fill: none; }
+                .sc-ans { fill: #171717; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
             </style>
             <text x="10" y="18" class="sc-ttl">Sample N chains at T&gt;0 &rarr; majority vote</text>
             <rect x="10" y="95" width="110" height="38" rx="6" class="sc-boxa"/>
@@ -501,13 +501,13 @@
             <path d="M120 114 C 170 130, 200 130, 250 130" class="sc-edge"/>
             <path d="M120 114 C 170 175, 200 180, 250 180" class="sc-edge"/>
             <rect x="250" y="38" width="180" height="32" rx="5" class="sc-box"/>
-            <text x="262" y="58" class="sc-ans">path 1 &rarr; <tspan fill="#76B900">11</tspan></text>
+            <text x="262" y="58" class="sc-ans">path 1 &rarr; <tspan fill="#36774d">11</tspan></text>
             <rect x="250" y="84" width="180" height="32" rx="5" class="sc-box"/>
-            <text x="262" y="104" class="sc-ans">path 2 &rarr; <tspan fill="#76B900">11</tspan></text>
+            <text x="262" y="104" class="sc-ans">path 2 &rarr; <tspan fill="#36774d">11</tspan></text>
             <rect x="250" y="130" width="180" height="32" rx="5" class="sc-box"/>
-            <text x="262" y="150" class="sc-ans">path 3 &rarr; <tspan fill="#ff7b72">9</tspan></text>
+            <text x="262" y="150" class="sc-ans">path 3 &rarr; <tspan fill="#9d1128">9</tspan></text>
             <rect x="250" y="176" width="180" height="32" rx="5" class="sc-box"/>
-            <text x="262" y="196" class="sc-ans">path N &rarr; <tspan fill="#76B900">11</tspan></text>
+            <text x="262" y="196" class="sc-ans">path N &rarr; <tspan fill="#36774d">11</tspan></text>
             <!-- vote -->
             <path d="M430 54 C 500 70, 510 95, 555 110" class="sc-edge"/>
             <path d="M430 100 C 500 100, 510 105, 555 112" class="sc-edge"/>
@@ -515,7 +515,7 @@
             <path d="M430 192 C 500 160, 510 130, 555 120" class="sc-edge"/>
             <rect x="555" y="92" width="130" height="44" rx="6" class="sc-boxa"/>
             <text x="567" y="112" class="sc-ans">vote &rarr;</text>
-            <text x="567" y="128" class="sc-ans"><tspan fill="#76B900" font-size="14">answer = 11</tspan></text>
+            <text x="567" y="128" class="sc-ans"><tspan fill="#36774d" font-size="14">answer = 11</tspan></text>
         </svg>
     </div>
 
@@ -539,13 +539,13 @@
     <div class="canvas-wrap">
         <svg viewBox="0 0 700 250" width="700" height="250" xmlns="http://www.w3.org/2000/svg">
             <style>
-                .tt-ttl { fill: #76B900; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
-                .tt-lbl { fill: #8b949e; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
-                .tt-node { fill: #161b22; stroke: #21262d; stroke-width: 1.5; }
-                .tt-good { fill: rgba(118,185,0,0.12); stroke: #76B900; stroke-width: 1.5; }
-                .tt-dead { fill: #161b22; stroke: #ff7b72; stroke-width: 1.5; stroke-dasharray: 3 3; }
-                .tt-edge { stroke: #21262d; stroke-width: 1.5; }
-                .tt-edgeg { stroke: #76B900; stroke-width: 2; }
+                .tt-ttl { fill: #36774d; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 12px; }
+                .tt-lbl { fill: #615f59; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
+                .tt-node { fill: #e1dfd9; stroke: #d1cfc7; stroke-width: 1.5; }
+                .tt-good { fill: rgba(54,119,77,0.12); stroke: #36774d; stroke-width: 1.5; }
+                .tt-dead { fill: #e1dfd9; stroke: #9d1128; stroke-width: 1.5; stroke-dasharray: 3 3; }
+                .tt-edge { stroke: #d1cfc7; stroke-width: 1.5; }
+                .tt-edgeg { stroke: #36774d; stroke-width: 2; }
             </style>
             <text x="10" y="18" class="tt-ttl">Search tree of thoughts: generate &rarr; evaluate &rarr; expand best / prune</text>
             <!-- edges -->
