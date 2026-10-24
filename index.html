@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-concept="preprint" lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -399,9 +399,61 @@
     /* deck-mobile-fix:hero */ .hero{overflow:hidden}@supports (overflow-x:clip){.hero{overflow:visible;overflow-x:clip}}
     /* deck-mobile-fix:phone */ @media (max-width:640px){.diagram-box,.tier-fill,.section-divider>span,.action-btn{white-space:normal;overflow-wrap:anywhere}.diagram-grid>*,.diagram-panel,.diagram-box,.code-block,.callout,.metric,.control-group,.control-row>*,.pipeline-body,.roll-track>*,.tier-fill,.timeline-row>*{min-width:0;max-width:100%}p,li,a,code,td,th,.callout,.diagram-panel{overflow-wrap:break-word}pre{max-width:100%;overflow-x:auto}table{display:block;max-width:100%;overflow-x:auto}.katex-display,.bits,.canvas-wrap,.influence-map-wrapper,.timeline-track,div:has(>.bank-cell){max-width:100%;overflow-x:auto;overflow-y:hidden}select,input,img,video,iframe,.action-btn{max-width:100%}canvas{max-width:100%;height:auto}}
     </style>
+<style id="deck-concept">
+html[data-concept=preprint] .hero{min-height:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:2.5rem;align-items:start;align-content:start;justify-items:stretch;text-align:left;max-width:1080px;margin:2rem auto 4rem;padding:2.5rem 2.75rem 2.25rem;background:#fffefb;box-shadow:0 1px 2px rgba(0,0,0,.08),0 10px 30px rgba(0,0,0,.08);position:relative}
+html[data-concept=preprint] .hero::before,html[data-concept=preprint] .hero::after{display:none}
+html[data-concept=preprint] .hero>*{grid-column:1/-1;margin-left:0;margin-right:0}
+html[data-concept=preprint] .hero .series-label,html[data-concept=preprint] .hero .tags{display:none}
+html[data-concept=preprint] .hero .pipeline{order:5;grid-column:1;justify-content:flex-start;gap:0 .3rem;margin:.6rem 0 0;font-size:.9rem}
+html[data-concept=preprint] .hero .pipeline::before{content:'Outline—';font-weight:700;font-style:italic;margin-right:.2rem}
+html[data-concept=preprint] .pipeline-step{background:none;border:0;border-radius:0;padding:0;color:var(--text-primary);font-family:var(--font-body);font-size:.9rem}
+html[data-concept=preprint] .pipeline-arrow{color:var(--text-secondary);font-weight:400}
+html[data-concept=preprint] .pp-venue{order:0;text-align:center;font-family:var(--font-display);font-style:italic;font-size:.9rem;color:var(--text-secondary);border-bottom:.5px solid var(--text-secondary);padding-bottom:.4rem;margin-bottom:1.6rem}
+html[data-concept=preprint] .hero h1{order:1;text-align:center;font-size:clamp(1.9rem,3.8vw,2.7rem);font-weight:600;line-height:1.15;letter-spacing:-.005em;margin-bottom:1.8rem}
+html[data-concept=preprint] .hero h1 .accent{color:inherit}
+html[data-concept=preprint] .hero .subtitle{order:2;grid-column:1;font-size:.98rem;line-height:1.6;text-align:justify;hyphens:auto;max-width:none;margin:0 0 .9rem;color:var(--text-primary)}
+html[data-concept=preprint] .hero .subtitle::before{content:'Abstract—';font-weight:700;font-style:italic}
+html[data-concept=preprint] .pp-terms{order:4;grid-column:1;font-size:.9rem;line-height:1.55;text-align:justify}
+html[data-concept=preprint] .pp-terms b{font-style:italic}
+html[data-concept=preprint] .pp-fig{order:3;grid-column:2;grid-row:3/span 3;margin:0;align-self:start}
+html[data-concept=preprint] .pp-fig figcaption{font-size:.84rem;line-height:1.45;color:var(--text-primary);margin-top:.4rem;text-align:justify}
+html[data-concept=preprint] .concept-art{display:block;width:100%;height:auto;overflow:hidden}
+html[data-concept=preprint] .concept-art text{font-family:var(--font-body);fill:#1b1b1b;font-size:10px}
+html[data-concept=preprint] .concept-art .pp-ts{fill:#5a5852}
+html[data-concept=preprint] .concept-art .pp-code{font-family:var(--font-mono);font-size:9.5px}
+html[data-concept=preprint] .concept-art .pp-hl{fill:#1f5f3a}
+html[data-concept=preprint] .concept-art .pp-bad{fill:#a3162e}
+html[data-concept=preprint] .concept-art rect{stroke:#1b1b1b;stroke-width:.9}
+html[data-concept=preprint] .concept-art .pp-box{fill:#fff}
+html[data-concept=preprint] .concept-art .pp-emb{fill:#f4efe2}
+html[data-concept=preprint] .concept-art .pp-att{fill:#f9d9a8}
+html[data-concept=preprint] .concept-art .pp-ff{fill:#c9e1f5}
+html[data-concept=preprint] .concept-art .pp-norm{fill:#f2f0a8}
+html[data-concept=preprint] .concept-art .pp-cell{fill:#f1f0ec;stroke:#9a978e}
+html[data-concept=preprint] .concept-art .pp-hi{fill:#9fd0a8}
+html[data-concept=preprint] .concept-art .pp-stack{fill:#f3f3f1;stroke:#7a786f;stroke-dasharray:3 2}
+html[data-concept=preprint] .concept-art line{stroke:#1b1b1b;stroke-width:1.1}
+html[data-concept=preprint] .concept-art .pp-head{fill:#1b1b1b;stroke:none}
+html[data-concept=preprint] .slide-number{font-family:var(--font-body);font-size:.85rem;font-weight:400;color:var(--text-secondary);top:4.4rem;right:1.5rem}
+html[data-concept=preprint] .slide h2{color:var(--text-primary);font-weight:600;padding-right:3rem}
+html[data-concept=preprint] .slide h2::before{content:counter(pp-sec,upper-roman) '.\00a0';counter-increment:pp-sec;color:var(--text-secondary);font-weight:400}
+html[data-concept=preprint] body{counter-reset:pp-sec}
+html[data-concept=preprint] .callout{border-radius:0}
+html[data-concept=preprint] .callout .callout-label,html[data-concept=preprint] .metric .metric-label{font-family:var(--font-display);text-transform:none;letter-spacing:0;font-size:.95rem;font-style:italic}
+html[data-concept=preprint] .tag,html[data-concept=preprint] .diagram-grid,html[data-concept=preprint] .canvas-wrap,html[data-concept=preprint] .control-panel,html[data-concept=preprint] .diagram-panel,html[data-concept=preprint] .metric,html[data-concept=preprint] .btn{border-radius:2px}
+@media (max-width:820px){
+ html[data-concept=preprint] .hero{grid-template-columns:minmax(0,1fr);margin:1rem .5rem 3rem;padding:1.5rem 1.1rem}
+ html[data-concept=preprint] .pp-fig{grid-column:1;grid-row:auto;order:5;margin-top:1.25rem}
+}
+</style>
 </head>
 <body>
 <header class="hero">
+<!-- deck-concept:start -->
+<div class="pp-venue" aria-hidden="true">Key LLM Publications · Reading 3 of 10</div>
+<div class="pp-terms" aria-hidden="true"><b>Index Terms</b>—Chain-of-Thought; Self-Consistency; Tree of Thoughts; Process Rewards; RL Reasoning; o1 / R1</div>
+<figure class="pp-fig"><svg class="concept-art" viewBox="0 0 420 300" role="img" aria-label="A chain-of-thought exemplar and self-consistency voting" xmlns="http://www.w3.org/2000/svg"><rect class="pp-emb" x="20" y="30" width="380" height="50" rx="3"/><text class="pp-t pp-code" x="32" y="50" text-anchor="start" style="font-size:10px">Q: Roger has 5 balls. He buys 2 cans of 3.</text><text class="pp-t pp-code" x="32" y="66" text-anchor="start" style="font-size:10px">   How many balls does he have now?</text><rect class="pp-ff" x="20" y="96" width="380" height="64" rx="3"/><text class="pp-t pp-code pp-hl" x="32" y="116" text-anchor="start" style="font-size:10px">A: Roger started with 5. 2 cans of 3 is 6.</text><text class="pp-t pp-code pp-hl" x="32" y="132" text-anchor="start" style="font-size:10px">   5 + 6 = 11. The answer is 11.</text><text class="pp-t pp-ts" x="390" y="152" text-anchor="end" style="font-size:9.5px">chain of thought</text><rect class="pp-att" x="20" y="186" width="180" height="70" rx="3"/><text class="pp-t" x="110" y="219" text-anchor="middle" style="font-size:10.5px">sample k chains</text><text class="pp-t pp-ts" x="110" y="232" text-anchor="middle" style="font-size:8.5px">at temperature > 0</text><line class="pp-ln" x1="204" y1="221" x2="236" y2="221"/><path class="pp-head" d="M230.7 223.9 L236 221 L230.7 218.1 Z"/><rect class="pp-norm" x="240" y="186" width="160" height="70" rx="3"/><text class="pp-t" x="320" y="219" text-anchor="middle" style="font-size:10.5px">majority vote</text><text class="pp-t pp-ts" x="320" y="232" text-anchor="middle" style="font-size:8.5px">self-consistency</text></svg><figcaption><b>Figure 1.</b> Chain-of-thought prompting (after Wei et al., 2022) and self-consistency: reason step by step, then vote.</figcaption></figure>
+<!-- deck-concept:end -->
     <div class="series-label">Key LLM Publications Series &mdash; Presentation 03</div>
     <h1>Reasoning &amp; <span class="accent">Test-Time Compute</span></h1>
     <p class="subtitle">The five papers that taught models to <em>think before answering</em> &mdash; from chain-of-thought prompting and majority voting, through deliberate tree search and step-level verification, to large-scale RL that grows reasoning from scratch.</p>
